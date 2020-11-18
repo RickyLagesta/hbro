@@ -1,11 +1,12 @@
 const Discord = require("discord.js");
-const { prefix, token } = require("./config.json");
+const { prefix, token, YOUTUBE_API } = require("./config.json");
 const ytdl = require("ytdl-core");
+const search = require('youtube-search');
 const opts = {
   maxResults: 25,
-  key: config.YOUTUBE_API,
+  key: YOUTUBE_API,
   type: 'video'
-};
+}; 
 
 const client = new Discord.Client();
 
@@ -32,6 +33,9 @@ client.on("message", async message => {
   if (message.content.startsWith(`${prefix}play`)) {
     execute(message, serverQueue);
     return;
+  } else if (message.content.startsWith(`${prefix}search`)) {
+    youtubeSearch(message, serverQueue);
+    return;
   } else if (message.content.startsWith(`${prefix}skip`)) {
     skip(message, serverQueue);
     return;
@@ -42,6 +46,36 @@ client.on("message", async message => {
     message.channel.send("dilo bien o me enfado");
   }
 });
+async function youtubeSearch (message, serverQueue){
+
+  const args = message.content.split(" ");
+  message.content = args.slice(1,-1).join(" ");      
+
+  
+  
+        let results = await search(message.content, opts).catch(err => console.log(err));
+        if(results) {
+            let youtubeResults = results.results;
+            let i  =0;
+            let titles = youtubeResults.map(result => {
+                i++;
+                return i + ") " + result.title;
+            });
+          
+            message.channel.send(titles)
+            .catch(err => console.log(err));
+            
+            filter = m => (m.author.id === message.author.id) && m.content >= 1 && m.content <= youtubeResults.length;
+            let collected = await message.channel.awaitMessages(filter, {max: 1 });
+            let selected = youtubeResults[collected.first().content - 1];
+
+            
+
+            message.channel.send (selected.link);
+            message.content = `${prefix}p ` + selected.link;
+            execute (message, serverQueue);
+}
+}
 
 async function execute(message, serverQueue) {
   const args = message.content.split(" ");
