@@ -1,6 +1,11 @@
 const Discord = require("discord.js");
 const { prefix, token } = require("./config.json");
 const ytdl = require("ytdl-core");
+const opts = {
+  maxResults: 25,
+  key: config.YOUTUBE_API,
+  type: 'video'
+};
 
 const client = new Discord.Client();
 
@@ -44,7 +49,7 @@ async function execute(message, serverQueue) {
   const voiceChannel = message.member.voice.channel;
   if (!voiceChannel)
     return message.channel.send(
-      "You need to be in a voice channel to play music!"
+      "o te vienes o no pongo nada, parvo"
     );
   const permissions = voiceChannel.permissionsFor(message.client.user);
   if (!permissions.has("CONNECT") || !permissions.has("SPEAK")) {
