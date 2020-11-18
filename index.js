@@ -96,7 +96,7 @@ async function execute(message, serverQueue) {
 function skip(message, serverQueue) {
   if (!message.member.voice.channel)
     return message.channel.send(
-      "no me grite que no te cuxoz"
+      "no me grite que no te cuxos"
     );
   if (!serverQueue)
     return message.reply("pero que dices payaso si no hay");
