@@ -1,11 +1,11 @@
-const discord = require("./required.js");
+const gobals = require("./globals.js");
 
 // Variables requeridas para el funcionamiento del bot
 const ytdl = require("ytdl-core");
 const search = require('youtube-search');
 const opts = {
-    maxResults: 10,
-    key: discord.YOUTUBE_API,
+    maxResults: gobals.options.video.searchResults,
+    key: gobals.YOUTUBE_API,
     type: 'video'
 };
 
@@ -48,7 +48,7 @@ async function preparePlay(message, serverQueue) {
                 playing: true
             };
 
-            discord.queue.set(message.guild.id, queueContruct);
+            gobals.queue.set(message.guild.id, queueContruct);
 
             queueContruct.songs.push(song);
 
@@ -58,7 +58,7 @@ async function preparePlay(message, serverQueue) {
                 play(message.guild, queueContruct.songs[0]);
             } catch (err) {
                 console.log(err);
-                discord.queue.delete(message.guild.id);
+                gobals.queue.delete(message.guild.id);
                 return message.channel.send(err);
             }
         } else {
@@ -78,11 +78,11 @@ async function preparePlay(message, serverQueue) {
  * @param song  URL a la canción
  */
 function play(guild, song) {
-    const serverQueue = discord.queue.get(guild.id);
+    const serverQueue = gobals.queue.get(guild.id);
 
     if (!song) {
         serverQueue.voiceChannel.leave();
-        discord.queue.delete(guild.id);
+        gobals.queue.delete(guild.id);
         return;
     }
 
@@ -106,6 +106,8 @@ async function youtubeSearch(message, serverQueue) {
     const args = message.content.split(" ");
     message.content = args.slice(1, -1).join(" ");
 
+    opts.maxResults = gobals.options.video.searchResults;
+
     let results = await search(message.content, opts).catch(err => console.log(err));
     if (results) {
         let youtubeResults = results.results;
@@ -123,7 +125,7 @@ async function youtubeSearch(message, serverQueue) {
 
         // Se llama a play()
         message.channel.send(selected.link);
-        message.content = `${discord.prefix}play ` + selected.link;
+        message.content = `${gobals.options.bot.prefix}play ` + selected.link;
         preparePlay(message, serverQueue);
     }
 }

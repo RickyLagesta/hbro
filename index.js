@@ -1,35 +1,45 @@
+const gobals = require("./src/globals.js");
 const player = require("./src/player.js");
 const misc = require("./src/misc.js");
-const discord = require("./src/required.js");
 
 /**
  * Método principal que lee los comandos escritos en chat
  */
-discord.client.on("message", async message => {
+gobals.client.on("message", async message => {
     if (message.author.bot) {
         return;
     }
 
-    if (!message.content.startsWith(discord.prefix)) {
+    if (!message.content.startsWith(gobals.options.bot.prefix)) {
         return;
     }
 
-    const serverQueue = discord.queue.get(message.guild.id);
+    const serverQueue = gobals.queue.get(message.guild.id);
 
-    console.log(message.content.split(" ")[0]);
     switch (message.content.split(" ")[0]) {
-        case `${discord.prefix}play`:
+
+        // Video
+        case `${gobals.options.bot.prefix}play`:
             player.preparePlay(message, serverQueue);
             break;
-        case `${discord.prefix}skip`:
+        case `${gobals.options.bot.prefix}skip`:
             player.skip(message, serverQueue);
             break;
-        case `${discord.prefix}stop`:
+        case `${gobals.options.bot.prefix}stop`:
             player.stop(message, serverQueue);
             break;
-        case `${discord.prefix}help`:
+        
+        // Opciones
+        case `${gobals.options.bot.prefix}setvar`:
+            misc.setVar(message);
+            break;
+
+
+        // Ayuda
+        case `${gobals.options.bot.prefix}help`:
             misc.showHelp(message);
             break;
+        
         default:
             message.channel.send("dilo bien o me enfado");
     }
@@ -39,19 +49,19 @@ discord.client.on("message", async message => {
 // || COMANDOS DE DESARROLLO ||
 // ----------------------------
 
-discord.client.once("ready", () => {
+gobals.client.once("ready", () => {
     console.log("tamo redi!");
 });
 
-discord.client.once("reconnecting", () => {
+gobals.client.once("reconnecting", () => {
     console.log("Reconnecting!");
 });
 
-discord.client.once("disconnect", () => {
+gobals.client.once("disconnect", () => {
     console.log("Disconnect!");
 });
 
 /**
  * Llamada al login con el token de discord 
  */
-discord.client.login(discord.token);
+gobals.client.login(gobals.token);

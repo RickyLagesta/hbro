@@ -1,0 +1,9 @@
+{
+    "bot": {
+        "prefix": "!"
+    },
+
+    "video": {
+        "searchResults": 10
+    }
+}
