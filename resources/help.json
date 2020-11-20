@@ -1,0 +1,8 @@
+{
+    "commandList": [
+        {"name": "help", "description": "Muestra esta ayuda"},
+        {"name": "play", "description": "Reproduce una canción (ya sea por URL o mediante búsqueda)"},
+        {"name": "stop", "description": "Para la reproducción"},
+        {"name": "skip", "description": "Salta a la siguiente canción"}
+    ]
+}

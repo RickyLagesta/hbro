@@ -1,169 +1,57 @@
-const Discord = require("discord.js");
-const { prefix, token, YOUTUBE_API } = require("./config.json");
-const ytdl = require("ytdl-core");
-const search = require('youtube-search');
-const opts = {
-  maxResults: 25,
-  key: YOUTUBE_API,
-  type: 'video'
-}; 
+const player = require("./src/player.js");
+const misc = require("./src/misc.js");
+const discord = require("./src/required.js");
 
-const client = new Discord.Client();
-
-const queue = new Map();
-
-client.once("ready", () => {
-  console.log("tamo redi!");
-});
-
-client.once("reconnecting", () => {
-  console.log("Reconnecting!");
-});
-
-client.once("disconnect", () => {
-  console.log("Disconnect!");
-});
-
-client.on("message", async message => {
-  if (message.author.bot) return;
-  if (!message.content.startsWith(prefix)) return;
-
-  const serverQueue = queue.get(message.guild.id);
-
-  if (message.content.startsWith(`${prefix}play`)) {
-    execute(message, serverQueue);
-    return;
-  } else if (message.content.startsWith(`${prefix}search`)) {
-    youtubeSearch(message, serverQueue);
-    return;
-  } else if (message.content.startsWith(`${prefix}skip`)) {
-    skip(message, serverQueue);
-    return;
-  } else if (message.content.startsWith(`${prefix}stop`)) {
-    stop(message, serverQueue);
-    return;
-  } else {
-    message.channel.send("dilo bien o me enfado");
-  }
-});
-async function youtubeSearch (message, serverQueue){
-
-  const args = message.content.split(" ");
-  message.content = args.slice(1,-1).join(" ");      
-
-  
-  
-        let results = await search(message.content, opts).catch(err => console.log(err));
-        if(results) {
-            let youtubeResults = results.results;
-            let i  =0;
-            let titles = youtubeResults.map(result => {
-                i++;
-                return i + ") " + result.title;
-            });
-          
-            message.channel.send(titles)
-            .catch(err => console.log(err));
-            
-            filter = m => (m.author.id === message.author.id) && m.content >= 1 && m.content <= youtubeResults.length;
-            let collected = await message.channel.awaitMessages(filter, {max: 1 });
-            let selected = youtubeResults[collected.first().content - 1];
-
-            
-
-            message.channel.send (selected.link);
-            message.content = `${prefix}p ` + selected.link;
-            execute (message, serverQueue);
-}
-}
-
-async function execute(message, serverQueue) {
-  const args = message.content.split(" ");
-
-  const voiceChannel = message.member.voice.channel;
-  if (!voiceChannel)
-    return message.channel.send(
-      "o te vienes o no pongo nada, parvo"
-    );
-  const permissions = voiceChannel.permissionsFor(message.client.user);
-  if (!permissions.has("CONNECT") || !permissions.has("SPEAK")) {
-    return message.channel.send(
-      "I need the permissions to join and speak in your voice channel!"
-    );
-  }
-
-  const songInfo = await ytdl.getInfo(args[1]);
-  const song = {
-        title: songInfo.videoDetails.title,
-        url: songInfo.videoDetails.video_url,
-   };
-
-  if (!serverQueue) {
-    const queueContruct = {
-      textChannel: message.channel,
-      voiceChannel: voiceChannel,
-      connection: null,
-      songs: [],
-      volume: 5,
-      playing: true
-    };
-
-    queue.set(message.guild.id, queueContruct);
-
-    queueContruct.songs.push(song);
-
-    try {
-      var connection = await voiceChannel.join();
-      queueContruct.connection = connection;
-      play(message.guild, queueContruct.songs[0]);
-    } catch (err) {
-      console.log(err);
-      queue.delete(message.guild.id);
-      return message.channel.send(err);
+/**
+ * Método principal que lee los comandos escritos en chat
+ */
+discord.client.on("message", async message => {
+    if (message.author.bot) {
+        return;
     }
-  } else {
-    serverQueue.songs.push(song);
-    return message.channel.send(`${song.title} ya verá que temazo puso este a la cola`);
-  }
-}
 
-function skip(message, serverQueue) {
-  if (!message.member.voice.channel)
-    return message.channel.send(
-      "no me grite que no te cuxo"
-    );
-  if (!serverQueue)
-    return message.reply("pero que dices payaso si no hay");
-  serverQueue.connection.dispatcher.end();
-}
+    if (!message.content.startsWith(discord.prefix)) {
+        return;
+    }
 
-function stop(message, serverQueue) {
-  if (!message.member.voice.channel)
-    return message.channel.send(
-      "illo que te tiene que poné nun caná pa zoná"
-    );
-  serverQueue.songs = [];
-  serverQueue.connection.dispatcher.end();
-  message.channel.send("vale ya paro");
-}
+    const serverQueue = discord.queue.get(message.guild.id);
 
-function play(guild, song) {
-  const serverQueue = queue.get(guild.id);
-  if (!song) {
-    serverQueue.voiceChannel.leave();
-    queue.delete(guild.id);
-    return;
-  }
+    console.log(message.content.split(" ")[0]);
+    switch (message.content.split(" ")[0]) {
+        case `${discord.prefix}play`:
+            player.preparePlay(message, serverQueue);
+            break;
+        case `${discord.prefix}skip`:
+            player.skip(message, serverQueue);
+            break;
+        case `${discord.prefix}stop`:
+            player.stop(message, serverQueue);
+            break;
+        case `${discord.prefix}help`:
+            misc.showHelp(message);
+            break;
+        default:
+            message.channel.send("dilo bien o me enfado");
+    }
+});
 
-  const dispatcher = serverQueue.connection
-    .play(ytdl(song.url))
-    .on("finish", () => {
-      serverQueue.songs.shift();
-      play(guild, serverQueue.songs[0]);
-    })
-    .on("error", error => console.error(error));
-  dispatcher.setVolumeLogarithmic(serverQueue.volume / 10);
-  serverQueue.textChannel.send(`Start playing: **${song.title}**`);
-}
+// ----------------------------
+// || COMANDOS DE DESARROLLO ||
+// ----------------------------
 
-client.login(token);
+discord.client.once("ready", () => {
+    console.log("tamo redi!");
+});
+
+discord.client.once("reconnecting", () => {
+    console.log("Reconnecting!");
+});
+
+discord.client.once("disconnect", () => {
+    console.log("Disconnect!");
+});
+
+/**
+ * Llamada al login con el token de discord 
+ */
+discord.client.login(discord.token);
