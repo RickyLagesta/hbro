@@ -1,4 +1,7 @@
 function error(text, message, err) {
+    let d = new Date();
+
+    console.log(d.getDay() + "/" + d.getMonth() + "/" + d.getFullYear() + "\t" + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds());
     console.log(err);
     message.channel.send("[ERROR] " + text);
 }

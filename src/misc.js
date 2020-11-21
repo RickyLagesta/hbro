@@ -38,19 +38,21 @@ async function clear(message) {
 function roll(message) {
     const args = message.content.split(" ");
 
-    text = "```\n";
-    total = 0;
+    let text = "```\n";
+    let total = 0;
 
     try {
         args.shift();
-        args.forEach(e => {
+        for (let i = 0; i < args.length; i++) {
+            let e = args[i];
+
             dice = e.split("d");
 
             if (e.startsWith("d")) {
                 dice = ["1", e.substring(1)];
             } else if (dice.length != 0) {
                 globals.error.unknownError(message, new Error);
-                continue;
+                return;
             }
 
             text += e + ": ";
@@ -63,9 +65,10 @@ function roll(message) {
                 }
             }
             text += "\n";
-        });
+        }
 
         text += "```\nResultado: **" + total + "**";
+
         message.channel.send(text);
     } catch (err) {
         globals.error.unknownError(message, err);
