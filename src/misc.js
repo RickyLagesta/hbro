@@ -38,7 +38,7 @@ async function clear(message) {
 function roll(message) {
     const args = message.content.split(" ");
 
-    text = "```";
+    text = "```\n";
     total = 0;
 
     try {
@@ -48,6 +48,9 @@ function roll(message) {
 
             if (e.startsWith("d")) {
                 dice = ["1", e.substring(1)];
+            } else if (dice.length != 0) {
+                globals.error.unknownError(message, new Error);
+                continue;
             }
 
             text += e + ": ";
