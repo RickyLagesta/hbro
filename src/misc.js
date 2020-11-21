@@ -50,7 +50,7 @@ function roll(message) {
 
             if (e.startsWith("d")) {
                 dice = ["1", e.substring(1)];
-            } else if (dice.length != 0) {
+            } else if (dice.length != 2) {
                 globals.error.unknownError(message, new Error);
                 return;
             }

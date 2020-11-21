@@ -130,7 +130,6 @@ async function youtubeSearch(message, serverQueue) {
     }
 }
 
-
 /**
  * Salta a la siguiente canción en la cola
  * 

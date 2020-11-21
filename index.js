@@ -64,13 +64,13 @@ gobals.client.on("message", async message => {
             misc.roll(message);
             break;
         
-            // Ayuda
+        // Ayuda
         case `${gobals.options.bot.prefix}help`:
             misc.showHelp(message);
             break;
         
         default:
-            globals.error.unknownCommand(message, err);
+            gobals.error.unknownCommand(message, new Error());
     }
 });
 
