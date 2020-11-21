@@ -5,7 +5,7 @@ const ytdl = require("ytdl-core");
 const search = require('youtube-search');
 const opts = {
     maxResults: gobals.options.video.searchResults,
-    key: gobals.YOUTUBE_API,
+    key: gobals.apiAccess.YOUTUBE_API,
     type: 'video'
 };
 

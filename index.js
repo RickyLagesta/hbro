@@ -34,8 +34,15 @@ gobals.client.on("message", async message => {
             misc.setVar(message);
             break;
 
+        case `${gobals.options.bot.prefix}reddit`:
+            misc.dumpReddit(message);
+            break;
 
-        // Ayuda
+        case `${gobals.options.bot.prefix}clear`:
+            misc.clear(message);
+            break;
+        
+            // Ayuda
         case `${gobals.options.bot.prefix}help`:
             misc.showHelp(message);
             break;
@@ -64,4 +71,4 @@ gobals.client.once("disconnect", () => {
 /**
  * Llamada al login con el token de discord 
  */
-gobals.client.login(gobals.token);
+gobals.client.login(gobals.apiAccess.token);
