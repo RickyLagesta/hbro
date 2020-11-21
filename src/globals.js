@@ -6,6 +6,7 @@
 // Conector con la API de discord
 const discord = require("discord.js");
 const client = new discord.Client();
+const error = require("./errors.js");
 
 // Tokens para las  APIs
 const apiAccess = require("../config.json");
@@ -16,4 +17,4 @@ const queue = new Map();
 // Opciones
 const options = require("../resources/options.json");
 
-module.exports = {discord, options, client, queue, apiAccess};
+module.exports = {discord, options, client, queue, apiAccess, error};

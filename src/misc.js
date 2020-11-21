@@ -1,33 +1,32 @@
 const gobals = require("./globals.js");
 const commands = require("../resources/help.json");
 const globals = require("./globals.js");
- 
+
 const reddit = require('reddit');
 
 const redditApi = new reddit({
-  username: globals.apiAccess.reddit.username,
-  password: globals.apiAccess.reddit.password,
-  appId: globals.apiAccess.reddit.appId,
-  appSecret: globals.apiAccess.reddit.appSecret,
-  userAgent: 'LonDiscordBot/1.0.0 (http://lonyelon.xyz)'
+    username: globals.apiAccess.reddit.username,
+    password: globals.apiAccess.reddit.password,
+    appId: globals.apiAccess.reddit.appId,
+    appSecret: globals.apiAccess.reddit.appSecret,
+    userAgent: 'LonDiscordBot/1.0.0 (http://lonyelon.xyz)'
 });
 
 
 /**
  * Elimina el número indicado de mensajes
  * 
- * @param {*} message 
+ * @param message 
  */
 async function clear(message) {
     const args = message.content.split(" ");
 
     try {
-        await message.channel.messages.fetch({ limit: parseInt(args[1] + 1) }).then(messages => {
+        await message.channel.messages.fetch({ limit: parseInt(args[1]) + 1 }).then(messages => {
             message.channel.bulkDelete(messages);
         });
     } catch (err) {
-        console.log(err);
-        message.reply("O eres tonto o te pasaste con el número");
+        globals.error.unknownError(message, err);
     }
 }
 
@@ -38,7 +37,7 @@ async function clear(message) {
  */
 function roll(message) {
     const args = message.content.split(" ");
-    
+
     text = "```";
     total = 0;
 
@@ -46,14 +45,14 @@ function roll(message) {
         args.shift();
         args.forEach(e => {
             dice = e.split("d");
-            
+
             if (e.startsWith("d")) {
                 dice = ["1", e.substring(1)];
             }
 
             text += e + ": ";
             for (let i = 0; i < parseInt(dice[0]); i++) {
-                let a = Math.floor(Math.random()*parseInt(dice[1])) + 1;
+                let a = Math.floor(Math.random() * parseInt(dice[1])) + 1;
                 text += a;
                 total += a;
                 if (i != parseInt(dice[0]) - 1) {
@@ -66,8 +65,7 @@ function roll(message) {
         text += "```\nResultado: **" + total + "**";
         message.channel.send(text);
     } catch (err) {
-        console.log(err);
-        message.reply("O eres tonto o lo pusiste mal");
+        globals.error.unknownError(message, err);
     }
 }
 
@@ -109,8 +107,7 @@ async function dumpReddit(message) {
             message.channel.send(embed);
         });
     } catch (err) {
-        message.reply("Rompiste algo, no sé el qué, pero lo rompiste.");
-        console.log(err);
+        globals.error.unknownError(message, err);
     }
 }
 

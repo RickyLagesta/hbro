@@ -3,6 +3,7 @@ const gobals = require("./globals.js");
 // Variables requeridas para el funcionamiento del bot
 const ytdl = require("ytdl-core");
 const search = require('youtube-search');
+const globals = require("./globals.js");
 const opts = {
     maxResults: gobals.options.video.searchResults,
     key: gobals.apiAccess.YOUTUBE_API,
@@ -21,13 +22,13 @@ async function preparePlay(message, serverQueue) {
     // Si el usuario no está en un canal de voz, salir
     const voiceChannel = message.member.voice.channel;
     if (!voiceChannel) {
-        return message.channel.send("o te vienes o no pongo nada, parvo");
+        return globals.error.userNotJoined(message, err);
     }
 
     // Si no se tienen permisos, salir
     const permissions = voiceChannel.permissionsFor(message.client.user);
     if (!permissions.has("CONNECT") || !permissions.has("SPEAK")) {
-        return message.channel.send("I need the permissions to join and speak in your voice channel!");
+        return globals.error.noVoicePermission(message, err);
     }
 
     if (isValidUrl(args[1])) {
@@ -57,8 +58,7 @@ async function preparePlay(message, serverQueue) {
                 queueContruct.connection = connection;
                 play(message.guild, queueContruct.songs[0]);
             } catch (err) {
-                console.log(err);
-                gobals.queue.delete(message.guild.id);
+                globals.error.unknownError(message, err);
                 return message.channel.send(err);
             }
         } else {
@@ -89,7 +89,7 @@ function play(guild, song) {
     const dispatcher = serverQueue.connection.play(ytdl(song.url)).on("finish", () => {
         serverQueue.songs.shift();
         play(guild, serverQueue.songs[0]);
-    }).on("error", error => console.error(error));
+    }).on("error", err => globals.error.queueError(message, err));
 
     dispatcher.setVolumeLogarithmic(serverQueue.volume / 10);
     serverQueue.textChannel.send(`Start playing: **${song.title}**`);
@@ -108,7 +108,7 @@ async function youtubeSearch(message, serverQueue) {
 
     opts.maxResults = gobals.options.video.searchResults;
 
-    let results = await search(message.content, opts).catch(err => console.log(err));
+    let results = await search(message.content, opts).catch(err => globals.error.searchError(message, err));
     if (results) {
         let youtubeResults = results.results;
         let i = 0;
@@ -117,7 +117,7 @@ async function youtubeSearch(message, serverQueue) {
             return i + ") " + result.title;
         });
 
-        message.channel.send(titles).catch(err => console.log(err));
+        message.channel.send(titles).catch(err => globals.error.unknownError(message, err));
 
         filter = m => (m.author.id === message.author.id) && m.content >= 1 && m.content <= youtubeResults.length;
         let collected = await message.channel.awaitMessages(filter, { max: 1 });

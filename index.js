@@ -70,7 +70,7 @@ gobals.client.on("message", async message => {
             break;
         
         default:
-            message.channel.send("dilo bien o me enfado");
+            globals.error.unknownCommand(message, err);
     }
 });
 
