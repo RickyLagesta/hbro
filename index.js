@@ -3,11 +3,29 @@ const player = require("./src/player.js");
 const misc = require("./src/misc.js");
 
 /**
+ * Comprueba si un string contiene lo pasado en pattern
+ * 
+ * @param target    String en le que se busca
+ * @param pattern   Patrón
+ */
+function contains(target, pattern){
+    var value = 0;
+    pattern.forEach(function(word){
+      value = value + target.includes(word);
+    });
+    return (value === 1)
+}
+
+/**
  * Método principal que lee los comandos escritos en chat
  */
 gobals.client.on("message", async message => {
     if (message.author.bot) {
         return;
+    }
+
+    if (contains(message.content, ["bungee", "gum", "chicle", "goma", "hisoka"])) {
+        message.channel.send("Sabías que Bungee Gum posee las propiedades del chicle **Y** la goma?!?!?!?!\nhttps://youtu.be/IFZQCbnEyMI");
     }
 
     if (!message.content.startsWith(gobals.options.bot.prefix)) {
