@@ -32,6 +32,46 @@ async function clear(message) {
 }
 
 /**
+ * hace un roll de dados al estilo DnD
+ * 
+ * @param message 
+ */
+function roll(message) {
+    const args = message.content.split(" ");
+    
+    text = "```";
+    total = 0;
+
+    try {
+        args.shift();
+        args.forEach(e => {
+            dice = e.split("d");
+            
+            if (e.startsWith("d")) {
+                dice = ["1", e.substring(1)];
+            }
+
+            text += e + ": ";
+            for (let i = 0; i < parseInt(dice[0]); i++) {
+                let a = Math.floor(Math.random()*parseInt(dice[1])) + 1;
+                text += a;
+                total += a;
+                if (i != parseInt(dice[0]) - 1) {
+                    text += ", ";
+                }
+            }
+            text += "\n";
+        });
+
+        text += "```\nResultado: **" + total + "**";
+        message.channel.send(text);
+    } catch (err) {
+        console.log(err);
+        message.reply("O eres tonto o lo pusiste mal");
+    }
+}
+
+/**
  * Envía los post de un subreddit
  * 
  * @param message 
@@ -122,4 +162,4 @@ function setVar(message) {
     }
 }
 
-module.exports = { showHelp, clear, dumpReddit, setVar };
+module.exports = { showHelp, clear, roll, dumpReddit, setVar };

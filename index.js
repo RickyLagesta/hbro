@@ -41,6 +41,10 @@ gobals.client.on("message", async message => {
         case `${gobals.options.bot.prefix}clear`:
             misc.clear(message);
             break;
+
+        case `${gobals.options.bot.prefix}roll`:
+            misc.roll(message);
+            break;
         
             // Ayuda
         case `${gobals.options.bot.prefix}help`:
