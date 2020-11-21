@@ -1,5 +1,5 @@
 # HBro bot
-Esto va a ser la *hostia*.
+Un bot de discord hecho por las risas.
 
 ## Instalación de dependencias en Ubuntu
 ```bash
