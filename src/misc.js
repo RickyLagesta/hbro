@@ -12,6 +12,12 @@ const redditApi = new reddit({
   userAgent: 'LonDiscordBot/1.0.0 (http://lonyelon.xyz)'
 });
 
+
+/**
+ * Elimina el número indicado de mensajes
+ * 
+ * @param {*} message 
+ */
 async function clear(message) {
     const args = message.content.split(" ");
 
@@ -25,6 +31,11 @@ async function clear(message) {
     }
 }
 
+/**
+ * Envía los post de un subreddit
+ * 
+ * @param message 
+ */
 async function dumpReddit(message) {
     const args = message.content.split(" ");
 
@@ -78,6 +89,11 @@ function showHelp(message) {
     message.reply(text);
 }
 
+/**
+ * Establece una variable de configuración
+ * 
+ * @param {*} message 
+ */
 function setVar(message) {
     const args = message.content.split(" ");
 
