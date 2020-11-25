@@ -10,6 +10,7 @@ Un bot de discord hecho por las risas.
 * `reddit {subreddit} [hot,top,new,trending]`: Postea una lista de posts del subreddit especificado (orden por defecto: *hot*).
 * `clear [n]`: Elimina *n* mensajes (y también el del comando).
 * `roll [dados]`: Hace un *roll* de dados al estilo *DnD*.
+* `waifu`: Devuelve una waifu.
 * `help`: Muestra la lista de comandos (posiblemente desactualizado). 
 
 ## Instalación de dependencias en Ubuntu
