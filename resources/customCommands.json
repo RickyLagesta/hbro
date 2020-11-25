@@ -1,0 +1,9 @@
+[
+    {"match": "bungee", "matchtype": "all", "type": "basic", "value": "¿¿¿Sabías que Bungee Gum posee las propiedades del **chicle y de la goma**???"},
+    {"match": "gum", "matchtype": "all", "type": "redirect/all", "value": "bungee"},
+    {"match": "chicle", "matchtype": "all", "type": "redirect/all", "value": "bungee"},
+    {"match": "goma", "matchtype": "all", "type": "redirect/all", "value": "bungee"},
+    {"match": "hisoka", "matchtype": "all", "type": "redirect/all", "value": "bungee"},
+
+    {"match": "w", "matchtype": "command", "type": "redirect/command", "value": "waifu"}
+]

@@ -1,8 +1,10 @@
+const request = require("request");
+const cheerio = require("cheerio");
+const reddit = require('reddit');
+
 const gobals = require("./globals.js");
 const commands = require("../resources/help.json");
 const globals = require("./globals.js");
-
-const reddit = require('reddit');
 
 const redditApi = new reddit({
     username: globals.apiAccess.reddit.username,
@@ -165,4 +167,34 @@ function setVar(message) {
     }
 }
 
-module.exports = { showHelp, clear, roll, dumpReddit, setVar };
+/**
+ * Devuelve una waifu de https://mywaifulist.moe
+ * 
+ * @param message Mensaje de peticion de comando
+ */
+function getWaifu(message) {
+    request("https://mywaifulist.moe/random", function (error, response, html) {
+        if (!error && response.statusCode == 200) {
+            const $ = cheerio.load(html);
+
+            var name = $('meta[property="og:title"]').attr('content');
+            var link = $('meta[property="og:url"]').attr('content');
+            var image = $('meta[property="og:image"]').attr('content');
+            var description = $('meta[property="og:description"]').attr('content');
+
+            if (!description.endsWith(".")) {
+                description += "..."
+            }
+
+            embed = new globals.discord.MessageEmbed()
+                .setTitle(name)
+                .setColor(0xff0000)
+                .setDescription(description)
+                .setImage(image)
+                .setURL(link);
+
+            message.channel.send(embed);
+        }
+    });
+}
+module.exports = { showHelp, clear, roll, dumpReddit, setVar, getWaifu };
